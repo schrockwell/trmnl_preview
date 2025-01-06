@@ -23,7 +23,7 @@ COPY Gemfile \
     /app/
 
 COPY lib/ /app/lib/
-COPY views/ /app/views/
+COPY web/ /app/web/
 COPY exe/ /app/exe/
 
 RUN bundle install
