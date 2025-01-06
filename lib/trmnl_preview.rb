@@ -2,10 +2,9 @@
 
 module TRMNLPreview; end
 
-# require_relative "trmnl_preview/app"
+require_relative "trmnl_preview/context"
 require_relative "trmnl_preview/version"
 
 module TRMNLPreview
-  class Error < StandardError; end
-  # Your code goes here...
+  VIEWS = %w{full half_horizontal half_vertical quadrant}
 end

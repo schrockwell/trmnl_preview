@@ -5,6 +5,8 @@ require_relative '../lib/trmnl_preview'
 case ARGV[0].to_s.downcase
 when 'serve'
   require_relative '../lib/trmnl_preview/cmd/serve'
+when 'build'
+  require_relative '../lib/trmnl_preview/cmd/build'
 else
   require_relative '../lib/trmnl_preview/cmd/usage'
 end

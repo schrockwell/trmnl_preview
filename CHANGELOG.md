@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0
+
+- Add poll button
+- Add case image overlays
+- Add `trmnlp build` command
+- Add support for `url` pointing to a local JSON data file
+
 ## 0.2.0
 
 - Add "commands" concept to `trmnlp` executable

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRMNL Preview</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 10px;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            width: fit-content;
+        }
+        menu {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        menu a {
+            padding: 0.5em 1em;
+            background: #ddd;
+            border-radius: 0.5em;
+            display: inline-block;
+            text-decoration: none;
+            color: black;
+        }
+        menu a:hover {
+            background: #ccc;
+        }
+        menu a.active {
+            background: #333;
+            color: white;
+        }
+        .case {
+            width: 1000px;
+            height: 680px;
+            position: relative;
+        }
+        iframe {
+            position: absolute;
+            border: none;
+            left: 98px;
+            top: 65px;
+            filter: grayscale(100%);
+        }
+        .case .case-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-size: cover;
+            mix-blend-mode: multiply;
+            pointer-events: none;
+        }
+        .case--none .case-overlay { background: none; }
+        .case--white .case-overlay { background-image: url('white-case.jpg') }
+        .case--black .case-overlay { background-image: url('black-case.jpg') }
+        .case--clear .case-overlay { background-image: url('clear-case.jpg') }
+        .case--none iframe {
+            border: 1px solid black;
+        }
+    </style>
+    <script>
+        function updateCase() {
+            const value = document.querySelector('.select-case').value;
+            document.querySelector('.case').className = `case case--${value}`;
+            localStorage.setItem('trmnlp-case', value);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const caseValue = localStorage.getItem('trmnlp-case') || 'black';
+
+            const select = document.querySelector('.select-case');
+            select.value = caseValue;
+            select.addEventListener('change', () => { updateCase() });
+            
+            updateCase();
+        });
+    </script>
+</head>
+<body>
+    <main>
+        <menu>
+            <div>
+                <a class="<%= 'active' if @view == 'full' %>" href="/full">Full</a>
+                <a class="<%= 'active' if @view == 'half_horizontal' %>" href="/half_horizontal">Half Horizontal</a>
+                <a class="<%= 'active' if @view == 'half_vertical' %>" href="/half_vertical">Half Vertical</a>
+                <a class="<%= 'active' if @view == 'quadrant' %>" href="/quadrant">Quadrant</a>
+            </div>
+            <div>
+                <select class="select-case">
+                    <option value="none">None</option>
+                    <option value="white">White</option>
+                    <option value="black" selected>Black</option>
+                    <option value="clear">Clear</option>
+                </select>
+
+                <a href="/poll">Poll</a>
+            </div>
+        </menu>
+
+        <div class="case case--black">
+            <iframe src="/render/<%= @view %>" width="800" height="480"></iframe>
+            <div class="case-overlay"></div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,97 +1,53 @@
-require 'json'
-require 'liquid'
-require 'open-uri'
+
 require 'sinatra'
 require 'sinatra/base'
-require 'toml-rb'
 
-require_relative 'liquid_filters'
+require_relative 'context'
 
-class TRMNLPreview::App < Sinatra::Base
-  # Constants
-  VIEWS = %w{full half_horizontal half_vertical quadrant}
+module TRMNLPreview
+  class App < Sinatra::Base
+    # Sinatra settings
+    set :views, File.join(File.dirname(__FILE__), '..', '..', 'web', 'views')
+    set :public_folder, File.join(File.dirname(__FILE__), '..', '..', 'web', 'public')
+    
+    def initialize(*args)
+      super
 
-  # Sinatra settings
-  set :views, File.join(File.dirname(__FILE__), '..', '..', 'views')
-  
-  def initialize(*args)
-    super
-
-    @config_path = File.join(settings.user_dir, 'config.toml')
-    @user_views_dir = File.join(settings.user_dir, 'views')
-    @temp_dir = File.join(settings.user_dir, 'tmp')
-    @data_json_path = File.join(@temp_dir, 'data.json')
-
-    unless File.exist?(@config_path)
-      puts "No config.toml found in #{settings.user_dir}"
-      exit 1
-    end
-  
-    unless Dir.exist?(@user_views_dir)
-      puts "No views found at #{@user_views_dir}"
-      exit 1
-    end
-
-    FileUtils.mkdir_p(@temp_dir)
-
-    @config = TomlRB.load_file(@config_path)
-    strategy = @config['strategy']
-  
-    unless ['polling', 'webhook'].include?(strategy)
-      puts "Invalid strategy: #{strategy} (must be 'polling' or 'webhook')"
-      exit 1
-    end
-  
-    url = @config['url']
-    polling_headers = @config['polling_headers'] || {}
-  
-    if strategy == 'polling'
-      if url.nil?
-        puts "URL is required for polling strategy"
+      begin
+        @context = Context.new(settings.user_dir)
+      rescue StandardError => e
+        puts e.message
         exit 1
       end
-  
-      print "Fetching #{url}... "
-      payload = URI.open(url, polling_headers).read
-      File.write(@data_json_path, payload)
-      puts "got #{payload.size} bytes"
-    end
-  
-    @liquid_environment = Liquid::Environment.build do |env|
-      env.register_filter(TRMNLPreview::LiquidFilters)
-    end
-  end
 
-  post '/webhook' do
-    body = request.body.read
-    File.write(@data_json_path, body)
-    "OK"
-  end
-  
-  get '/' do
-    redirect '/full'
-  end
-  
-  VIEWS.each do |view|
-    get "/#{view}" do
-      @view = view
-      erb :index
+      @context.poll_data if @context.strategy == 'polling'
     end
 
-    get "/render/#{view}" do
-      path = File.join(@user_views_dir, "#{view}.liquid")
-      unless File.exist?(path)
-        halt 404, "Plugin template not found: views/#{view}.liquid"
+    post '/webhook' do
+      @context.set_data(request.body.read)
+      "OK"
+    end
+    
+    get '/' do
+      redirect '/full'
+    end
+
+    get '/poll' do
+      @context.poll_data
+      redirect back
+    end
+    
+    VIEWS.each do |view|
+      get "/#{view}" do
+        @view = view
+        erb :index
       end
 
-      user_template = Liquid::Template.parse(File.read(path), environment: @liquid_environment)
-
-      @view = view
-      erb :render_view do
-        data = JSON.parse(File.read(@data_json_path))
-        data = { data: data } if data.is_a?(Array) # per TRMNL docs, bare array is wrapped in 'data' key
-
-        user_template.render(data)
+      get "/render/#{view}" do
+        @view = view
+        erb :render_view do
+          @context.render_template(view)
+        end
       end
     end
   end
