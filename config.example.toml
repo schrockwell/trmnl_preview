@@ -5,6 +5,9 @@ strategy = "polling"
 # Poll URL (required for polling strategy)
 url = "https://example.com/data.json"
 
+# Automatically re-render the view when Liquid templates change (default: true)
+live_render = true
+
 # Polling headers (optional, for polling strategy)
 [polling_headers]
 authorization = "bearer 123"

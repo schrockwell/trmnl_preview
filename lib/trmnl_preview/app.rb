@@ -1,4 +1,5 @@
 
+require 'faye/websocket'
 require 'sinatra'
 require 'sinatra/base'
 
@@ -21,6 +22,13 @@ module TRMNLPreview
       end
 
       @context.poll_data if @context.strategy == 'polling'
+
+      @live_render_clients = VIEWS.each_with_object({}) { |view, hash| hash[view] = [] }
+      @context.on_view_change do |view|
+        @live_render_clients[view].each do |ws|
+          ws.send(@context.render_template(view))
+        end
+      end
     end
 
     post '/webhook' do
@@ -30,6 +38,21 @@ module TRMNLPreview
     
     get '/' do
       redirect '/full'
+    end
+
+    get '/live_render/:view' do
+      ws = Faye::WebSocket.new(request.env)
+      view = params['view']
+
+      ws.on(:open) do |event|
+        @live_render_clients[view] << ws
+      end
+  
+      ws.on(:close) do |event|
+        @live_render_clients[view].delete(ws)
+      end
+  
+      ws.rack_response
     end
 
     get '/poll' do
@@ -45,6 +68,7 @@ module TRMNLPreview
 
       get "/render/#{view}" do
         @view = view
+        @live_render = @context.live_render
         erb :render_view do
           @context.render_template(view)
         end

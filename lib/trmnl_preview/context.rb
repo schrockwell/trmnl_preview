@@ -1,5 +1,6 @@
 require 'erb'
 require 'fileutils'
+require 'filewatcher'
 require 'json'
 require 'liquid'
 require 'open-uri'
@@ -9,7 +10,7 @@ require_relative 'liquid_filters'
 
 module TRMNLPreview
   class Context
-    attr_reader :strategy, :temp_dir
+    attr_reader :strategy, :temp_dir, :live_render
     
     def initialize(root)
       config_path = File.join(root, 'config.toml')
@@ -33,12 +34,36 @@ module TRMNLPreview
       @strategy = config['strategy']
       @url = config['url']
       @polling_headers = config['polling_headers'] || {}
+      @live_render = config['live_render'] != false
 
       unless ['polling', 'webhook'].include?(@strategy)
         raise "Invalid strategy: #{strategy} (must be 'polling' or 'webhook')"
       end
 
       FileUtils.mkdir_p(@temp_dir)
+
+      start_filewatcher_thread if @live_render
+    end
+
+    def start_filewatcher_thread
+      Thread.new do
+        loop do
+          begin
+            Filewatcher.new(@user_views_dir).watch do |changes|
+              views = changes.map { |path, _change| File.basename(path, '.liquid') }
+              views.each do |view|
+                @view_change_callback.call(view) if @view_change_callback
+              end
+            end
+          rescue => e
+            puts "Error during live render: #{e}"
+          end
+        end
+      end
+    end
+
+    def on_view_change(&block)
+      @view_change_callback = block
     end
 
     def user_data
@@ -75,13 +100,15 @@ module TRMNLPreview
     end
 
     def render_template(view)
-      path = view_path(view)
-      unless File.exist?(path)
-        return "Missing plugin template: views/#{view}.liquid"
-      end
+        path = view_path(view)
+        unless File.exist?(path)
+          return "Missing plugin template: views/#{view}.liquid"
+        end
 
-      user_template = Liquid::Template.parse(File.read(path), environment: @liquid_environment)
-      user_template.render(user_data)
+        user_template = Liquid::Template.parse(File.read(path), environment: @liquid_environment)
+        user_template.render(user_data)
+    rescue StandardError => e
+      e.message
     end
 
     def render_full_page(view)

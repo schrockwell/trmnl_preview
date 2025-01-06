@@ -4,6 +4,8 @@ A basic self-hosted web server to ease the development and sharing of [TRMNL](ht
 
 [Liquid](https://shopify.github.io/liquid/) templates are rendered locally as HTML, leveraging the [TRMNL Design System](https://usetrmnl.com/framework). This server does NOT generate a rendered BMP file. Hence, this is just a _preview_ of the final rendered dashboard.
 
+The server watches the filesystem for changes to the Liquid templates, seamlessly updating the preview without the need to refresh.
+
 ![Screenshot](docs/preview.png)
 
 ## Creating a Plugin
@@ -53,6 +55,7 @@ When the strategy is "webhook", payloads can be POSTed to the `/webhook` endpoin
 
 - `strategy` - Either "polling" or "webhook"
 - `url` - The URL from which to fetch JSON data (polling strategy only)
+- `live_render` - Set to `false` to disable automatic rendering when Liquid templates change (default `true`)
 - `[polling_headers]` - A section of headers to append to the HTTP poll request (polling strategy only)
 
 ## Contributing

@@ -37,6 +37,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "puma", "~> 6.5"
   spec.add_dependency "liquid", "~> 5.6"
   spec.add_dependency "toml-rb", "~> 3.0"
+  spec.add_dependency "filewatcher", "~> 2.1"
+  spec.add_dependency "faye-websocket", "~> 0.11.3"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

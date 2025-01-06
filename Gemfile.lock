@@ -4,10 +4,17 @@ GEM
     base64 (0.2.0)
     bigdecimal (3.1.9)
     citrus (3.0.2)
+    eventmachine (1.2.7)
+    faye-websocket (0.11.3)
+      eventmachine (>= 0.12.0)
+      websocket-driver (>= 0.5.1)
+    filewatcher (2.1.0)
+      module_methods (~> 0.1.0)
     liquid (5.6.0)
       bigdecimal
       strscan
     logger (1.6.4)
+    module_methods (0.1.0)
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.7.4)
@@ -38,12 +45,18 @@ GEM
     toml-rb (3.0.1)
       citrus (~> 3.0, > 3.0)
       racc (~> 1.7)
+    websocket-driver (0.7.7)
+      base64
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.5)
 
 PLATFORMS
   arm64-darwin-24
   ruby
 
 DEPENDENCIES
+  faye-websocket (~> 0.11.3)
+  filewatcher (~> 2.1)
   liquid (~> 5.6)
   puma (~> 6.5)
   rackup (~> 2.2)
