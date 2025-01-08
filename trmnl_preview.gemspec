@@ -31,14 +31,25 @@ Gem::Specification.new do |spec|
   spec.executables = ["trmnlp"]
   spec.require_paths = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
+
+  # Web server
   spec.add_dependency "sinatra", "~> 4.1"
   spec.add_dependency "rackup", "~> 2.2"
   spec.add_dependency "puma", "~> 6.5"
+  spec.add_dependency "faye-websocket", "~> 0.11.3"
+
+  # HTML rendering
   spec.add_dependency "liquid", "~> 5.6"
+  spec.add_dependency "activesupport", "~> 8.0"
+  
+  # BMP rendering
+  spec.add_dependency "ferrum", "~> 0.16"
+  spec.add_dependency 'puppeteer-ruby', '~> 0.45.6'
+  spec.add_dependency 'mini_magick', '~> 4.12.0'
+
+  # Utilities
   spec.add_dependency "toml-rb", "~> 3.0"
   spec.add_dependency "filewatcher", "~> 2.1"
-  spec.add_dependency "faye-websocket", "~> 0.11.3"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

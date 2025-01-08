@@ -7,6 +7,8 @@ when 'serve'
   require_relative '../lib/trmnl_preview/cmd/serve'
 when 'build'
   require_relative '../lib/trmnl_preview/cmd/build'
+when 'version'
+  require_relative '../lib/trmnl_preview/cmd/version'
 else
   require_relative '../lib/trmnl_preview/cmd/usage'
 end

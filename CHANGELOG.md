@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2
+
+- Add bitmap rendering
+- Add TRMNL's [custom plugin filters](https://help.usetrmnl.com/en/articles/10347358-custom-plugin-filters)
+- Add support for user-supplied custom filters
+
+## 0.3.1
+
+- Add live render
+
 ## 0.3.0
 
 - Add poll button

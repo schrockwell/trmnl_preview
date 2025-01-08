@@ -1,8 +1,8 @@
-# trmnl_preview
+# trmnlp
 
 A basic self-hosted web server to ease the development and sharing of [TRMNL](https://usetrmnl.com/) plugins.
 
-[Liquid](https://shopify.github.io/liquid/) templates are rendered locally as HTML, leveraging the [TRMNL Design System](https://usetrmnl.com/framework). This server does NOT generate a rendered BMP file. Hence, this is just a _preview_ of the final rendered dashboard.
+[Liquid](https://shopify.github.io/liquid/) templates are rendered leveraging the [TRMNL Design System](https://usetrmnl.com/framework). They may be generated as HTML (faster, and a good approximation of the final result) or as BMP images (slower, but more accurate).
 
 The server watches the filesystem for changes to the Liquid templates, seamlessly updating the preview without the need to refresh.
 
@@ -36,16 +36,21 @@ docker run \
 
 ## Running the Server (Local Ruby)
 
-Ruby 3.x is required. In the plugin repository:
+Prerequisites:
+
+- Ruby 3.x
+- For BMP rendering (optional):
+  - Firefox
+  - ImageMagick
+
+In the plugin repository:
 
 ```sh
-bundle add trmnl_preview    # Creates Gemfile and Gemfile.lock
+gem install trmnl_preview
 trmnlp serve                # Starts the server
 ```
 
 ## Usage Notes
-
-Simply refresh the page to re-render.
 
 When the strategy is "polling", the specified URL will be fetched once, when the server starts.
 

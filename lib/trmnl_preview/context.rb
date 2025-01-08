@@ -6,21 +6,17 @@ require 'liquid'
 require 'open-uri'
 require 'toml-rb'
 
-require_relative 'liquid_filters'
+require_relative 'custom_filters'
 
 module TRMNLPreview
   class Context
     attr_reader :strategy, :temp_dir, :live_render
     
-    def initialize(root)
+    def initialize(root, opts = {})
       config_path = File.join(root, 'config.toml')
       @user_views_dir = File.join(root, 'views')
       @temp_dir = File.join(root, 'tmp')
       @data_json_path = File.join(@temp_dir, 'data.json')
-    
-      @liquid_environment = Liquid::Environment.build do |env|
-        env.register_filter(LiquidFilters)
-      end
 
       unless File.exist?(config_path)
         raise "No config.toml found in #{root}"
@@ -35,12 +31,22 @@ module TRMNLPreview
       @url = config['url']
       @polling_headers = config['polling_headers'] || {}
       @live_render = config['live_render'] != false
+      @user_filters = config['custom_filters'] || []
 
       unless ['polling', 'webhook'].include?(@strategy)
         raise "Invalid strategy: #{strategy} (must be 'polling' or 'webhook')"
       end
-
+      
       FileUtils.mkdir_p(@temp_dir)
+
+      @liquid_environment = Liquid::Environment.build do |env|
+        env.register_filter(CustomFilters)
+
+        @user_filters.each do |module_name, relative_path|
+          require File.join(root, relative_path)
+          env.register_filter(Object.const_get(module_name))
+        end
+      end
 
       start_filewatcher_thread if @live_render
     end
@@ -112,7 +118,7 @@ module TRMNLPreview
     end
 
     def render_full_page(view)
-      page_erb_template = File.read(File.join(__dir__, '..', '..', 'web', 'views', 'render_view.erb'))
+      page_erb_template = File.read(File.join(__dir__, '..', '..', 'web', 'views', 'render_html.erb'))
       
       ERB.new(page_erb_template).result(ERBBinding.new(view).get_binding do
         render_template(view)

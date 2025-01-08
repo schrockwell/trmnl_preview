@@ -4,6 +4,7 @@ require 'sinatra'
 require 'sinatra/base'
 
 require_relative 'context'
+require_relative 'screen_generator'
 
 module TRMNLPreview
   class App < Sinatra::Base
@@ -23,10 +24,10 @@ module TRMNLPreview
 
       @context.poll_data if @context.strategy == 'polling'
 
-      @live_render_clients = VIEWS.each_with_object({}) { |view, hash| hash[view] = [] }
+      @live_reload_clients = []
       @context.on_view_change do |view|
-        @live_render_clients[view].each do |ws|
-          ws.send(@context.render_template(view))
+        @live_reload_clients.each do |ws|
+          ws.send('reload')
         end
       end
     end
@@ -40,16 +41,15 @@ module TRMNLPreview
       redirect '/full'
     end
 
-    get '/live_render/:view' do
+    get '/live_reload' do
       ws = Faye::WebSocket.new(request.env)
-      view = params['view']
 
       ws.on(:open) do |event|
-        @live_render_clients[view] << ws
+        @live_reload_clients << ws
       end
   
       ws.on(:close) do |event|
-        @live_render_clients[view].delete(ws)
+        @live_reload_clients.delete(ws)
       end
   
       ws.rack_response
@@ -63,15 +63,23 @@ module TRMNLPreview
     VIEWS.each do |view|
       get "/#{view}" do
         @view = view
+        @live_reload = @context.live_render
         erb :index
       end
 
-      get "/render/#{view}" do
+      get "/render/#{view}.html" do
         @view = view
-        @live_render = @context.live_render
-        erb :render_view do
+        erb :render_html do
           @context.render_template(view)
         end
+      end
+
+      get "/render/#{view}.bmp" do
+        @view = view
+        html = @context.render_full_page(view)
+        generator = ScreenGenerator.new(html, image: true)
+        img_path = generator.process
+        send_file img_path, type: 'image/png', disposition: 'inline'
       end
     end
   end

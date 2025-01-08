@@ -1,0 +1,98 @@
+body {
+  font-family: sans-serif;
+  margin: 10px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+menu {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+menu a {
+  padding: 0.5em 1em;
+  background: #ddd;
+  border-radius: 0.5em;
+  display: inline-block;
+  text-decoration: none;
+  color: black;
+}
+
+menu a:hover {
+  background: #ccc;
+}
+
+menu a.active {
+  background: #333;
+  color: white;
+}
+
+.case {
+  width: 1000px;
+  height: 680px;
+  position: relative;
+}
+
+iframe {
+  position: absolute;
+  border: none;
+  left: 98px;
+  top: 65px;
+  filter: grayscale(100%);
+}
+
+.case .case-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.case--none .case-overlay {
+  background: none;
+}
+
+.case--white .case-overlay {
+  background-image: url("white-case.jpg");
+}
+
+.case--black .case-overlay {
+  background-image: url("black-case.jpg");
+}
+
+.case--clear .case-overlay {
+  background-image: url("clear-case.jpg");
+}
+
+.case--none iframe {
+  border: 1px solid black;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 5px solid #f3f3f3; /* Light gray */
+  border-top: 5px solid #3498db; /* Blue */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
