@@ -1,14 +1,27 @@
+# This file is the main configuration for the plugin
+
+# Secrets can be stored in .secrets.toml and referenced using {token} syntax 
+# as per the authorization header token below
+# optionally create a .env file (see .secrets.example.toml) and add your secrets there
+# The .env file should not be committed to version control
+
+# Environment variables can be referenced using {env:VARIABLE_NAME} syntax
+# Supports both full value and substring replacement:
+#   authorization = "{env:AUTH_TOKEN}"              # full value
+#   url = "https://api.example.com?key={env:KEY}"  # substring
+
 # strategy = "polling" ==> the data will be fetched once, at server start-up
 # strategy = "webhook" ==> POST new data to /webhook
 strategy = "polling"
 
 # Poll URL (required for polling strategy)
-url = "https://example.com/data.json"
+url = "https://example.com/data.json?key={env:API_KEY}"
 
 # Automatically re-render the view when Liquid templates change (default: true)
 live_render = true
 
 # Polling headers (optional, for polling strategy)
 [polling_headers]
-authorization = "bearer 123"
+authorization = "{env:AUTHORIZATION}"
+x-api-key = "{env:X_API_KEY}"
 content-type = "application/json"

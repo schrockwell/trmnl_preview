@@ -1,4 +1,8 @@
+require_relative '../version'
+
 puts <<-USAGE
+TRMNL Preview v#{TRMNLPreview::VERSION}
+
 Usage:
 
   trmnlp [command] [options]

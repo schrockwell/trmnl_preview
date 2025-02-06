@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.3.5
+
+- Add support for `strategy = "static"` to read data from `sample.json`
+
+## 0.3.4
+
+- Add support for `.env` files to store sensitive information
+- Add validation for environment variable names (must use underscores, not hyphens)
+- Add more descriptive error messages for environment variable issues
+
+## 0.3.3
+
+- Add version number to usage info
+- Add ability to run server from different directories
+
 ## 0.3.2
 
 - Add bitmap rendering
