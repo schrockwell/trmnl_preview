@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = 'Automatically rebuild and preview TRNML plugins in multiple views'
   spec.homepage = 'https://github.com/usetrmnl/trmnlp'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.4'
+  spec.required_ruby_version = '>= 4.0'
 
   spec.metadata['allowed_push_host'] = 'https://rubygems.org'
 
@@ -47,7 +47,7 @@ Gem::Specification.new do |spec|
 
   # HTML rendering
   spec.add_dependency 'activesupport', '~> 8.0'
-  spec.add_dependency 'trmnl-liquid', '~> 0.7.0'
+  spec.add_dependency 'trmnl-liquid', '~> 0.8.2'
 
   # PNG rendering
   # spec.add_dependency 'puppeteer-ruby', '~> 0.45.6'

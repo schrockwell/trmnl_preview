@@ -23,18 +23,19 @@ RSpec.describe TRMNLP::Config::Project do
     end
 
     it 'recursively stringifies nested array and hash values' do
-      project.instance_variable_set(:@config, {
+      config = {
         'custom_fields' => {
           'nested' => {
             'items' => [1, { 'value' => 2 }, [3, 4]],
             'enabled' => true
           }
         }
-      })
+      }
+      project.instance_variable_set(:@config, config)
 
       expect(project.custom_fields).to include(
         'nested' => {
-          'items' => ['1', { 'value' => '2' }, ['3', '4']],
+          'items' => ['1', { 'value' => '2' }, %w[3 4]],
           'enabled' => 'true'
         }
       )

@@ -1,6 +1,11 @@
 
 # Changelog
 
+## 0.12.0
+
+- `required_ruby_version` is now `>= 4.0`, matching the Ruby version trmnlp actually needs. It has understated the real floor since 0.4.0: both `xdg` (Ruby 4.0 in the 10.x series pinned since 0.8.0) and `trmnl-liquid` (Ruby 4.0 since 0.5.0) require more than the gemspec claimed. RubyGems resolves against the declared value, so `gem install trmnl_preview` on an older Ruby did not fail. It quietly walked backwards to the newest version whose dependency tree resolved, reporting "Successfully installed" for a build up to twenty months old. On Ruby 3.4 that was 0.7.1, and on Ruby 3.3 and below it was 0.3.2, which predates the Thor CLI and offers only `serve`, `build` and `version`. Asking for the current version explicitly (`gem install trmnl_preview -v 0.11.0`) crashed RubyGems inside its own conflict reporting rather than explaining the problem. Installing on an unsupported Ruby now stops with "requires Ruby version >= 4.0".
+- Dependencies updated to their current releases. `trmnl-liquid` moves from 0.7.0 to 0.8.2, the only pin that excluded a newer release; every other dependency already resolved to its newest version on a fresh install. The two trmnl-liquid versions ship identical code and identical dependencies, so rendering is unchanged.
+
 ## 0.11.0
 
 - `framework_version:` now resolves against the release manifest published by the design system, not only the version list shipped inside the gem, so a framework version released after your trmnlp install can be pinned without upgrading. The manifest is read once per run with a 2 second timeout. If the request fails, or the response is not a version list, the copy bundled in the gem is used and rendering continues. That bundled copy is refreshed here too: `latest` moves from 3.1.1 to 3.2.0.
