@@ -13,6 +13,8 @@ The server watches the filesystem for changes to the Liquid templates, seamlessl
 
 ## Quick Start
 
+trmnlp requires Ruby 4.0 or newer. Check with `ruby -v` before installing.
+
 ```sh
 gem install trmnl_preview     # install
 trmnlp init my_plugin         # scaffold a project
